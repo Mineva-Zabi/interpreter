@@ -4,7 +4,7 @@
 #include <vector>
 
 enum LEXTYPE {
-  NUMBER, 
+  NUMBER, OPER
 };
 
 enum OPERATOR {
