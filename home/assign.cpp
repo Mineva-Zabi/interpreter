@@ -38,7 +38,7 @@ public:
     Lexem(){};
     Lexem (LEXTYPE type) {lxtp = type;}
     LEXTYPE getLexType();
-    virtual void print();
+    virtual void print(){}
     virtual OPERATOR getType(){}
     virtual int getPriority(){};
     virtual int getValue(){};
@@ -51,7 +51,7 @@ public:
 class Number: public Lexem {
     int value;
 public:
-Number(){}
+    Number();
     Number(int number): Lexem(NUMBER), value(number) {}
     int getValue() const;
     void print();
@@ -94,6 +94,10 @@ LEXTYPE Lexem::getLexType(){
 
 int Number::getValue() const {
     return value;
+}
+
+Number:: Number(){
+    value = 0;
 }
 
 void Number::print() {
