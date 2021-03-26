@@ -210,7 +210,7 @@ void Oper::print() {
 void Oper :: setType(std::string op) {
     for (int i = 0; i < OP_NUM; i++) {
         if (op == OPERTEXT[i]) {
-            opertype = static_cast<OPERATOR>(i);
+            opertype = (OPERATOR)(i);
             break;
         }
     }
