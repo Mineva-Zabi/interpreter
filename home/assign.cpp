@@ -4,6 +4,9 @@
 #include <vector>
 #include <map>
 
+
+std::map<std::string, int> _map;
+
 enum LEXTYPE {
     NUMBER, OPER,
     VARIABLE
@@ -29,7 +32,7 @@ std::string OPERTEXT[] = {
     "+", "-",
     "*"
 };
-//int OP_NUM = sizeof(PRIORITY) / sizeof(int);
+int OP_NUM = sizeof(PRIORITY) / sizeof(int);
 
 
 class Lexem {
@@ -42,6 +45,7 @@ public:
     virtual OPERATOR getType(){}
     virtual int getPriority(){};
     virtual int getValue(){};
+    virtual void setType(std::string){};
     virtual int getValue(Lexem *, Lexem *){};
     virtual void setValue(int value){};
     virtual ~Lexem() {};
@@ -62,10 +66,11 @@ class Oper: public Lexem {
     OPERATOR opertype;
 public:
     Oper(){}
-    Oper(int op);
+    Oper(std::string &);
     OPERATOR getType();
     int getPriority();
     int getValue(Lexem *, Lexem *);
+    void setType(std::string);
     void print();
     ~Oper(){}
 };
@@ -81,7 +86,6 @@ public:
     ~Variable(){}
 };
 
-std::map<std::string, int> _map;
 
 LEXTYPE Lexem::getLexType(){
     return lxtp;
@@ -104,16 +108,20 @@ void Number::print() {
     std::cout << value << ' ';
 }
 
-Oper::Oper(int op) : Lexem(OPER) {
+/*Oper::Oper(int op) : Lexem(OPER) {
     opertype = (OPERATOR) op;
 }
-
+*/
 OPERATOR Oper::getType() {
     return opertype;
 }
 
 int Oper::getPriority() {
     return PRIORITY[opertype];
+}
+
+Oper::Oper(std::string & op) : Lexem(OPER){
+    setType(op);
 }
 
 int Oper::getValue(Lexem* left, Lexem* right) {
@@ -145,6 +153,15 @@ void Oper::print() {
     std::cout << OPERTEXT[opertype] << ' ';
 }
 
+void Oper :: setType(std::string op) {
+    for (int i = 0; i < OP_NUM; i++) {
+        if (op == OPERTEXT[i]) {
+            opertype = static_cast<OPERATOR>(i);
+            break;
+        }
+    }
+}
+
 void print_vector(std::vector<Lexem *> infix) {
     int size = infix.size();
     for (int i = 0; i < size; i++) {
@@ -169,19 +186,19 @@ void Variable::print() {
 Lexem *get_number(std::string codeline, int & pos) {
     if (!isdigit(codeline[pos]))
         return NULL;
-        int number = 0;
-        for (int size = codeline.size(); pos < size && isdigit(codeline[pos]); pos++)
+    int number = 0;
+    for (int size = codeline.size(); pos < size && isdigit(codeline[pos]); pos++)
         number = number * 10 + codeline[pos] - '0';
-        return new Number(number);
+    pos--;
+    return new Number(number);
 }
 
 Lexem *get_oper(std::string codeline, int & pos) {
-    int size = sizeof(OPERTEXT) / sizeof(std::string);
-    for (int i = 0; i < size; i++) {
-        int opsize = OPERTEXT[i].size();
-        if(codeline.substr(pos, opsize) == OPERTEXT[i]) {
-            pos += opsize;
-            return new Oper(i);
+    for (int i = 0; i < OP_NUM; i++) {
+        std::string subcodeline = codeline.substr(pos, OPERTEXT[i].size());
+        if (OPERTEXT[i] == subcodeline) {
+            pos += OPERTEXT[i].size() - 1;
+            return new Oper(subcodeline);
         }
     }
     return NULL;
@@ -195,38 +212,41 @@ bool checkWord(char ch) {
 
 Lexem *get_var(std::string codeline, int & pos) {
     int size = codeline.size();
-    std::string var;
-    for (int i = pos; i <= size; i++) {
-        if (!checkWord(codeline[pos])) {
-            var = codeline.substr(pos, i - pos);
-            pos = i - 1;
-            if(_map.find(var) == _map.end()){
-                _map[var] = 0;
-                return nullptr;
-            }
+    std::string var = "";
+    for (int i = pos; i < size; i++) {
+        if (checkWord(codeline[pos])) {
+            var += codeline[i];
         }
+    }
+    pos--;
+    if(_map.find(var) == _map.end()){
+        _map[var] = 0;
     }
     return new Variable(var);
 }
 
 std::vector<Lexem *> parseLexem(std::string codeline){
     std::vector<Lexem *> infix;
-    Lexem *lexem = NULL;
-    for (int i = 0, size = codeline.size(); i < size;) {
-        while ((codeline[i] == ' ') || (codeline[i] == '\t') || (codeline[i] == '\n'))
-            i++;
-            if (!lexem)
-            lexem = get_number(codeline, i);
-            if (!lexem)
-            lexem = get_oper(codeline, i);
-            if (!lexem)
-            lexem = get_var(codeline, i);
-            if (lexem) {
-                infix.push_back(lexem);
-                lexem = nullptr;
-            } else
-                i++;
-                }
+    for (int i = 0; i < codeline.size(); i++) {
+        if ((codeline[i] == ' ') || (codeline[i] == '\t') || (codeline[i] == '\n'))
+            continue;
+        Lexem *lexem = NULL;
+        lexem = get_oper(codeline, i);
+        if (lexem != NULL) {
+            infix.push_back(lexem);
+            continue;
+        }
+        lexem = get_number(codeline, i);
+        if (lexem != NULL) {
+            infix.push_back(lexem);
+            continue;
+        }
+        lexem = get_var(codeline, i);
+        if (lexem != NULL) {
+            infix.push_back(lexem);
+            continue;
+        }
+    }
     return infix;
 }
 
@@ -237,18 +257,21 @@ std::vector<Lexem *> buildPoliz(std::vector<Lexem *> infix){
     for (int i = 0, size = infix.size(); i < size; i++) {
         LEXTYPE lextype = infix[i]->getLexType();
         switch(lextype) {
-            case NUMBER:
+            case NUMBER: {
                 poliz.push_back(infix[i]);
                 break;
-            case VARIABLE:
+            }
+            case VARIABLE: {
                 poliz.push_back(infix[i]);
                 break;
-            case OPER:
+            }
+            case OPER: {
                 switch((infix[i])->getType()) {
-                    case LBRACKET:
+                    case LBRACKET: {
                         opstack.push(infix[i]);
                         break;
-                    case RBRACKET:
+                    }
+                    case RBRACKET: {
                         delete infix[i];
                         while ((opstack.top())->getType() != LBRACKET) {
                             poliz.push_back(opstack.top());
@@ -257,13 +280,15 @@ std::vector<Lexem *> buildPoliz(std::vector<Lexem *> infix){
                         delete opstack.top();
                         opstack.pop();
                         break;
+                    }
                     default:
-                        while ((!opstack.empty()) && (opstack.top())->getPriority() >= (infix[i])->getPriority()){
+                        while ((opstack.size() > 0) && ((opstack.top())->getPriority() >= (infix[i])->getPriority())){
                             poliz.push_back(opstack.top());
                             opstack.pop();
                         }
                         opstack.push(infix[i]);
                     }
+                }
             default: {}
         }
     }
@@ -295,9 +320,17 @@ int evaluatePoliz(std::vector<Lexem *> poliz) {
             default: {}
         }
     }
-    return evalstack.top()->getValue();
+    int ev = evalstack.top() -> getValue();
+    delete evalstack.top();
+    return ev;
 }
 
+void printVar() {
+    std::cout << "VARIABLES TABLE:" << std::endl;
+    for (std::map<std::string, int>::iterator it = _map.begin(); it != _map.end(); it++) {
+        std::cout << it->first << ' ' << it->second << ' ' << std::endl;
+    }
+}
 int main() {
     std::string codeline;
     std::vector <Lexem *> infix;
@@ -311,7 +344,9 @@ int main() {
         postfix = buildPoliz(infix);
         //[10 , 2 , +] -> 12
         value = evaluatePoliz(postfix);
-        std::cout << value << std::endl;
+        std::cout << "Value: " << value << std::endl;
+        printVar();
+        std::cout << std::endl;
   }
   return 0;
 }
