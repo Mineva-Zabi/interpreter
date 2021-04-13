@@ -1,7 +1,7 @@
 #ifndef LEXEM
 #define LEXEM
 #include <const.h>
-
+extern std::map<std::string, int> varTable;
 class Lexem {
     LEXTYPE lxtp;
 public:

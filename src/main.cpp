@@ -3,6 +3,8 @@
 #include <semantic.h>
 #include <syntax.h>
 
+std::map<std::string, int> varTable;
+
 int main() {
     std::string codeline;
     std::vector <Lexem *> infix;

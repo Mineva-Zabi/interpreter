@@ -28,5 +28,5 @@ enum OPERATOR {
 extern int PRIORITY[];
 extern std::string OPERTEXT[];
 extern int OP_NUM;
-extern std::map<std::string, int> varTable;
+
 #endif
