@@ -1,6 +1,6 @@
 #include <lexem.h>
 
-
+std::map<std::string, int> varTable;
 LEXTYPE Lexem::getLexType(){
     return lxtp;
 }
