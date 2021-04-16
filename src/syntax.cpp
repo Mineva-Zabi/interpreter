@@ -5,26 +5,31 @@ std::vector<Lexem *> buildPoliz(std::vector<Lexem *> infix) {
     std::vector<Lexem *> poliz;
     std::stack<Lexem *> opstack;
 
-    for (int i = 0, size = infix.size(); i < size; i++) {
-        LEXTYPE lextype = infix[i]->getLexType();
+    for (const auto lexem: infix) {
+        LEXTYPE lextype = lexem->getLexType();
         switch(lextype) {
+            case nullptr:
             case NUMBER: {
-                poliz.push_back(infix[i]);
+                poliz.push_back(lexem);
                 break;
             }
             case VARIABLE: {
-                //std::cout << "akdskdd" << std::endl;
-                poliz.push_back(infix[i]);
+                Variable *levemvar = (Variable*)lexem;
+                if (lexemvar->inLabelsMap()){
+                    joinGotoAndLabel(lexemvar, opstack);
+                } else {
+                    poliz.push_back(lexem);
+                }
                 break;
             }
             case OPER: {
-                switch((infix[i])->getType()) {
+                switch(lexem)->getType()) {
                     case LBRACKET: {
-                        opstack.push(infix[i]);
+                        opstack.push(lexem);
                         break;
                     }
                     case RBRACKET: {
-                        delete infix[i];
+                        delete lexem;
                         while ((opstack.top())->getType() != LBRACKET) {
                             poliz.push_back(opstack.top());
                             opstack.pop();
@@ -34,11 +39,11 @@ std::vector<Lexem *> buildPoliz(std::vector<Lexem *> infix) {
                         break;
                     }
                     default: {}
-                    while ((opstack.size() > 0) && ((opstack.top())->getPriority() >= (infix[i])->getPriority())){
+                    while ((opstack.size() > 0) && ((opstack.top())->getPriority() >= lexem->getPriority())){
                             poliz.push_back(opstack.top());
                             opstack.pop();
                         }
-                        opstack.push(infix[i]);
+                        opstack.push(lexem);
                     }
                 }
             default: {}
@@ -49,4 +54,11 @@ std::vector<Lexem *> buildPoliz(std::vector<Lexem *> infix) {
         opstack.pop();
     }
     return poliz;
+}
+
+void joinGotoAndLabel(Variable *lexemvar, stack<Oper *> stack) {
+    if (stack.top()->getType() == GOTO) {
+        Goto *lexemgoto = (Goto*)stack.top();
+        lexemgoto->setRow(labelsMap[lexemvar->getName()]);
+    }
 }

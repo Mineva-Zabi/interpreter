@@ -7,20 +7,21 @@
 
 int main() {
     std::string codeline;
-    std::vector <Lexem *> infix;
-    std::vector <Lexem *> postfix;
-    int value;
+    std::vector <Lexem *> infixLines;
+    std::vector <Lexem *> postfixLines;
 
-    while (std::getline(std::cin, codeline)) {
-        // " 10+2 " -> [10 ,+ ,2]
-        infix = parseLexem(codeline);
-        //[10 ,+ ,2] -> [10 , 2 , +]
-        postfix = buildPoliz(infix);
-        //[10 , 2 , +] -> 12
-        value = evaluatePoliz(postfix);
-        std::cout << "Value: " << value << std::endl;
-        printVar();
-        std::cout << std::endl;
-  }
-  return 0;
+
+    while (std::getline(std::cin, codeline) != "quit") {
+        infixLines.push_back(parseLexem(codeline));
+
+    for (int row = 0; row < (int)infixLines.size(); ++row)
+        initLabels(infixlines[row], row);
+
+    for (const auto &infix: infixLines)
+        postfixLines.push_back(buildPoliz(infix));
+
+    int row = 0;
+    while (row >= 0 && row < (int)postfixLines.size())
+        row = evaluatePoliz(postfixlines[row], row);
+    return 0;
 }

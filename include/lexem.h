@@ -2,6 +2,7 @@
 #define LEXEM
 #include <const.h>
 extern std::map<std::string, int> varTable;
+extern std::map<std::string, int> labelsMap;
 class Lexem {
     LEXTYPE lxtp;
 public:
@@ -53,6 +54,17 @@ public:
     void print();
     ~Variable(){}
 };
+
+class Goto: public Operator {
+    int row;
+public:
+    enum { UNDEFINED = -INT32_MAX };
+    Goto(OPERATOR opertype): Oper(opertype) { row = UNDEFINED; } 
+    void setRow(int);
+    int getRow();
+    void print();
+    ~Goto() {}
+}
 
 void printVar();
 void printVector(std::vector<Lexem *> infix);

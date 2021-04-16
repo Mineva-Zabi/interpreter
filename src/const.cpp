@@ -2,6 +2,7 @@
 
 int PRIORITY [] = {
     -1, -1,
+    -1, -1,
     6, 6,
     0,
     1,
@@ -16,6 +17,7 @@ int PRIORITY [] = {
 };
 
 std::string OPERTEXT[] = {
+    "goto", ":",
     "(", ")",
     "==", "!=",
     "=",

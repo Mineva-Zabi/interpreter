@@ -1,31 +1,41 @@
 #include <semantic.h>
 
 
-int evaluatePoliz(std::vector<Lexem *> poliz) {
+int evaluatePoliz(std::vector<Lexem *> poliz, int row) {
     std::stack<Lexem *> evalstack;
     Lexem *right, *left;
-    for (int i = 0, size = poliz.size(); i < size; i++) {
-        switch(poliz[i]->getLexType()) {
+    for (const auto &lexem: poliz) {
+        switch(lexem->getLexType()) {
+            case nullptr:
+                return 0;
             case NUMBER:
-                evalstack.push(poliz[i]);
+                Number *lexemnum = (Number*)lexem;
+                evalstack.push(lexemnum);
                 break;
             case VARIABLE:
-                evalstack.push(poliz[i]);
+                Variable *lexemvar = (Variable*)lexem;
+                evalstack.push(lexemvar);
                 break;
             case OPER:
-                right = evalstack.top();
-                evalstack.pop();
-                left = evalstack.top();
-                evalstack.pop();
-                evalstack.push(new Number(poliz[i]->getValue(left, right)));
-                delete poliz[i];
-                delete left;
-                delete right;
+                Oper* lexemop = (Oper*)lexem;
+                if (lexemop->getType() == GOTO) {
+                    Goto *lexemgoto = (Goto*)lexemop;
+                    return lexemgoto->getRow();
+                } else {
+                    right = evalstack.top();
+                    evalstack.pop();
+                    left = evalstack.top();
+                    evalstack.pop();
+                    evalstack.push(new Number(lexem->getValue(left, right)));
+                    delete lexem;
+                    delete left;
+                    delete right;
+                }
                 break;
             default: {}
         }
     }
-    int ev = evalstack.top() -> getValue();
-    delete evalstack.top();
-    return ev;
+    //int ev = evalstack.top() -> getValue();
+    //delete evalstack.top();
+    return row + 1;
 }

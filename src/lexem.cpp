@@ -1,6 +1,7 @@
 #include <lexem.h>
 
 std::map<std::string, int> varTable;
+std::map<std::string, int> labelsMap;
 LEXTYPE Lexem::getLexType(){
     return lxtp;
 }
@@ -105,6 +106,14 @@ void Variable::setValue(int value_) {
 
 void Variable::print() {
     std::cout << name << '(' << varTable[name] << ')';
+}
+
+void Goto::setRow(int row_) {
+    row = row_;
+}
+
+void Goto::getRow() {
+    return row;
 }
 
 void printVar() {

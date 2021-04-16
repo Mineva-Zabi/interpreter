@@ -11,6 +11,7 @@ enum LEXTYPE {
     VARIABLE
 };
 enum OPERATOR {
+    GOTO, COLON,
     LBRACKET, RBRACKET,
     EQ, NEQ,
     ASSIGN,
