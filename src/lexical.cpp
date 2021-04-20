@@ -78,13 +78,16 @@ void initLabels(std::vector <Lexem*> &infix, int row) {
         if (infix[i-1]->getLexType() == VARIABLE && infix[i]->getLexType() == OPER) {
             Variable *lexemvar = (Variable *)infix[i-1];
             Oper *lexemop = (Oper *)infix[i];
-            if (lexemop->getType() == COLON) {
-                labelsMap[lexemvar->getName()] = row;
-                delete infix[i-1];
-                delete infix[i];
-                infix[i-1] = nullptr ;
-                infix[i] = nullptr ;
-                i++;
+            if (lexemvar && lexemop){
+                if (lexemop->getType() == COLON) {
+                    labelsMap[lexemvar->getName()] = row;
+                    delete infix[i-1];
+                    delete infix[i];
+                    infix[i-1] = nullptr;
+                    infix[i] = nullptr;
+                    i++;
+                    std::cout << "qq" << std::endl;
+                }
             }
         }
     }

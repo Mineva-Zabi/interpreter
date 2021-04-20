@@ -4,38 +4,38 @@
 int evaluatePoliz(std::vector<Lexem *> poliz, int row) {
     std::stack<Lexem *> evalstack;
     Lexem *right, *left;
-    for (const auto &lexem: poliz) {
-        switch(lexem->getLexType()) {
-            case nullptr:
-                return 0;
-            case NUMBER:
-                Number *lexemnum = (Number*)lexem;
-                evalstack.push(lexemnum);
+    for (int i = 0, size = poliz.size(); i < size; i++) {
+        switch(poliz[i]->getLexType()) {
+            case NUMBER: {
+                evalstack.push(poliz[i]);
                 break;
-            case VARIABLE:
-                Variable *lexemvar = (Variable*)lexem;
-                evalstack.push(lexemvar);
+            }
+            case VARIABLE: {
+                evalstack.push(poliz[i]);
                 break;
-            case OPER:
-                Oper* lexemop = (Oper*)lexem;
-                if (lexemop->getType() == GOTO) {
-                    Goto *lexemgoto = (Goto*)lexemop;
+            }
+            case OPER: {
+                    //std::cout << "yes" << std::endl;
+                if (poliz[i]->getType() == GOTO) {
+                    Goto *lexemgoto = (Goto*)(poliz[i]);
                     return lexemgoto->getRow();
                 } else {
                     right = evalstack.top();
                     evalstack.pop();
                     left = evalstack.top();
                     evalstack.pop();
-                    evalstack.push(new Number(lexem->getValue(left, right)));
-                    delete lexem;
+                    evalstack.push(new Number(poliz[i]->getValue(left, right)));
+                    delete poliz[i];
                     delete left;
                     delete right;
                 }
                 break;
+            }
             default: {}
         }
     }
-    //int ev = evalstack.top() -> getValue();
-    //delete evalstack.top();
+    int ev = evalstack.top() -> getValue();
+    delete evalstack.top();
+    std::cout << ev << std::endl;
     return row + 1;
 }

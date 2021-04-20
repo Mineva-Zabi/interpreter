@@ -38,6 +38,10 @@ Oper::Oper(std::string & op) : Lexem(OPER){
     setType(op);
 }
 
+Oper::Oper(OPERATOR op) {
+    opertype = op;
+}
+
 int Oper::getValue(Lexem* left, Lexem* right) const {
     switch(opertype) {
         case PLUS:
@@ -108,17 +112,27 @@ void Variable::print() {
     std::cout << name << '(' << varTable[name] << ')';
 }
 
+std::string Variable::getName() {
+    return name;
+}
 void Goto::setRow(int row_) {
-    row = row_;
+    Goto::row = row_;
 }
 
-void Goto::getRow() {
+int Goto::getRow() {
     return row;
 }
 
 void printVar() {
     std::cout << "VARIABLES TABLE:" << std::endl;
     for (std::map<std::string, int>::iterator it = varTable.begin(); it != varTable.end(); it++) {
+        std::cout << (it->first) << ' ' << (it->second) << ' ' << std::endl;
+    }
+}
+
+void printLabel() {
+    std::cout << "LABELS MAP:" << std::endl;
+    for (std::map<std::string, int>::iterator it = labelsMap.begin(); it != labelsMap.end(); it++) {
         std::cout << (it->first) << ' ' << (it->second) << ' ' << std::endl;
     }
 }
@@ -130,4 +144,11 @@ void printVector(std::vector<Lexem *> infix) {
         std::cout << " ";
     }
     std::cout << std::endl;
+}
+
+bool Variable::inLabelsMap() {
+    if (labelsMap.find(name) != labelsMap.end()) {
+        return true;
+    }
+return false;
 }

@@ -36,6 +36,7 @@ class Oper: public Lexem {
 public:
     Oper() {}
     Oper(std::string &);
+    Oper(OPERATOR op);
     OPERATOR getType();
     int getPriority();
     int getValue(Lexem *, Lexem *) const;
@@ -51,22 +52,25 @@ public:
     Variable(std::string str): Lexem(VARIABLE), name(str) {}
     int getValue() const;
     void setValue(int);
+    std::string getName();
     void print();
     ~Variable(){}
+    bool inLabelsMap();
+
 };
 
-class Goto: public Operator {
+class Goto: public Oper {
     int row;
 public:
-    enum { UNDEFINED = -INT32_MAX };
-    Goto(OPERATOR opertype): Oper(opertype) { row = UNDEFINED; } 
+    Goto(OPERATOR opertype): Oper(opertype) { row = -1; }
     void setRow(int);
     int getRow();
     void print();
     ~Goto() {}
-}
+};
 
 void printVar();
+void printLabel();
 void printVector(std::vector<Lexem *> infix);
 
 
