@@ -17,6 +17,7 @@ std::vector<Lexem*> buildPoliz(std::vector<Lexem*> infix) {
             case VARIABLE: {
                 Variable *lexemvar = (Variable*)currentLexem;
                 if(((Variable*)currentLexem) -> inLabelsMap()) {
+
                     joinGotoAndLabel(lexemvar, poliz);
                     break;
                 }
@@ -69,7 +70,7 @@ std::vector<Lexem*> buildPoliz(std::vector<Lexem*> infix) {
     return poliz;
 }
 
-void joinGotoAndLabel(Variable *lexemvar, std::vector<Lexem *> &vec) {
+void joinGotoAndLabel(Variable *lexemvar, std::vector<Lexem *> vec) {
     std::cout << "before join" << std::endl;
     if (vec.back()->getType() == GOTO) {
         Goto *lexemgoto = (Goto*)(vec.back());

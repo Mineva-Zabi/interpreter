@@ -27,8 +27,9 @@ int main() {
     int row = 0;
     while (row >= 0 && row < (int)postfixLines.size())
         row = evaluatePoliz(postfixLines[row], row);
-
-    std::cout << std::endl;
+        /*std::cout << "EVAL POLIZ" << std::endl;
+        printVecVec(postfixLines);
+    */std::cout << std::endl;
     printVar();
     std::cout << std::endl;
     printLabel();

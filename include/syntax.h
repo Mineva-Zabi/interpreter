@@ -3,6 +3,6 @@
 #include <lexem.h>
 
 std::vector<Lexem *> buildPoliz(std::vector<Lexem *> infix);
-void joinGotoAndLabel(Variable *lexemvar, std::vector<Lexem *> &vec);
+void joinGotoAndLabel(Variable *lexemvar, std::vector<Lexem *> vec);
 
 #endif

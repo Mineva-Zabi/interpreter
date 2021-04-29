@@ -61,7 +61,7 @@ Oper::Oper(std::string & op) : Lexem(OPER){
     setType(op);
 }
 
-Oper::Oper(OPERATOR op) {
+Oper::Oper(OPERATOR op): Lexem(OPER) {
     opertype = op;
 }
 
