@@ -2,18 +2,41 @@
 
 std::map<std::string, int> varTable;
 std::map<std::string, int> labelsMap;
+Lexem::Lexem(){}
 LEXTYPE Lexem::getLexType(){
     return lxtp;
 }
+Lexem::Lexem(LEXTYPE type) {
+    lxtp = type;
+}
+Lexem::~Lexem(){}
+void Lexem::print() {}
+OPERATOR Lexem::getType() {
+    return PLUS;
+}
+int Lexem::getPriority(){
+    return 1;
+}
+int Lexem::getValue() const {
+    return 1;
+}
+void Lexem::setType(std::string) {}
+int Lexem::getValue(Lexem*, Lexem*) const {
+    return 1;
+}
+void Lexem::setValue(int){}
 
 int Number::getValue() const {
     return value;
 }
 
+
+Number::~Number() {}
 Number:: Number(){
     value = 0;
 }
 
+Number::Number(int number): Lexem(NUMBER), value(number) {}
 void Number::print() {
     std::cout << value << ' ';
 }
@@ -91,6 +114,9 @@ void Oper::print() {
     std::cout << OPERTEXT[opertype] << ' ';
 }
 
+Oper::Oper() {}
+Oper::~Oper() {}
+
 void Oper::setType(std::string op) {
     for (int i = 0; i < OP_NUM; i++) {
         if (op == OPERTEXT[i]) {
@@ -108,6 +134,11 @@ void Variable::setValue(int value_) {
     varTable[name] = value_;
 }
 
+Variable::Variable(){}
+Variable::~Variable(){}
+Variable::Variable(std::string str): Lexem(VARIABLE), name(str) {}
+
+
 void Variable::print() {
     std::cout << name << '(' << varTable[name] << ')';
 }
@@ -115,13 +146,38 @@ void Variable::print() {
 std::string Variable::getName() {
     return name;
 }
-void Goto::setRow(int row_) {
-    Goto::row = row_;
+
+Goto::Goto() {}
+
+Goto::Goto(OPERATOR opertype) : Oper(opertype){
+    row = INT32_MIN;
+    oper = opertype;
+}
+
+void Goto::setRow(int row) {
+    Goto::row = row;
+}
+
+void Goto::setRow(const std::string name) {
+    row = labelsMap[name];
 }
 
 int Goto::getRow() {
     return row;
 }
+
+void Goto::print() {
+    std :: cout << "[<row "<< row << ">" << oper << "]" ;
+}
+
+OPERATOR Goto::getType() {
+    return oper;
+}
+
+
+
+
+
 
 void printVar() {
     std::cout << "VARIABLES TABLE:" << std::endl;
@@ -140,10 +196,19 @@ void printLabel() {
 void printVector(std::vector<Lexem *> infix) {
     int size = infix.size();
     for (int i = 0; i < size; i++) {
+        if (infix[i] == nullptr)
+            continue;
         infix[i]->print();
         std::cout << " ";
     }
     std::cout << std::endl;
+}
+
+void printVecVec(const std::vector<std::vector<Lexem *>> &infix) {
+    for (int i = 0; i < (int)infix.size(); i++) {
+        std::cout << i << ": ";
+        printVector(infix[i]);
+    }
 }
 
 bool Variable::inLabelsMap() {

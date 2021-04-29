@@ -19,6 +19,9 @@ Lexem *getOper(std::string codeline, int & pos) {
         std::string subcodeline = codeline.substr(pos, OPERTEXT[i].size());
         if (OPERTEXT[i] == subcodeline) {
             pos += OPERTEXT[i].size() - 1;
+            if ( i == GOTO || i == IF ||i == ELSE ||
+                   i == WHILE || i == ENDWHILE )
+                    return new Goto(static_cast<OPERATOR>(i));
             return new Oper(subcodeline);
         }
     }
@@ -86,7 +89,6 @@ void initLabels(std::vector <Lexem*> &infix, int row) {
                     infix[i-1] = nullptr;
                     infix[i] = nullptr;
                     i++;
-                    std::cout << "qq" << std::endl;
                 }
             }
         }

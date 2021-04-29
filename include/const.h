@@ -11,6 +11,9 @@ enum LEXTYPE {
     VARIABLE
 };
 enum OPERATOR {
+    IF, ELSE,
+    ENDIF, WHILE,
+    ENDWHILE,
     GOTO, COLON,
     LBRACKET, RBRACKET,
     EQ, NEQ,

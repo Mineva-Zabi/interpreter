@@ -4,7 +4,10 @@
 int evaluatePoliz(std::vector<Lexem *> poliz, int row) {
     std::stack<Lexem *> evalstack;
     Lexem *right, *left;
+
     for (int i = 0, size = poliz.size(); i < size; i++) {
+        if (poliz[i] == nullptr)
+            continue;
         switch(poliz[i]->getLexType()) {
             case NUMBER: {
                 evalstack.push(poliz[i]);
@@ -15,7 +18,6 @@ int evaluatePoliz(std::vector<Lexem *> poliz, int row) {
                 break;
             }
             case OPER: {
-                    //std::cout << "yes" << std::endl;
                 if (poliz[i]->getType() == GOTO) {
                     Goto *lexemgoto = (Goto*)(poliz[i]);
                     return lexemgoto->getRow();
@@ -36,6 +38,6 @@ int evaluatePoliz(std::vector<Lexem *> poliz, int row) {
     }
     int ev = evalstack.top() -> getValue();
     delete evalstack.top();
-    std::cout << ev << std::endl;
+    //std::cout << ev << std::endl;
     return row + 1;
 }

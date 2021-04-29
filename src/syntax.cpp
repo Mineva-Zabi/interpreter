@@ -1,70 +1,80 @@
 #include <syntax.h>
 
 
-std::vector<Lexem *> buildPoliz(std::vector<Lexem *> infix) {
+std::vector<Lexem*> buildPoliz(std::vector<Lexem*> infix) {
     std::vector<Lexem *> poliz;
-    std::stack<Lexem *> opstack;
+    std::stack<Lexem *> operStack;
+    for(auto currentLexem: infix) {
+        if(currentLexem == nullptr) {
+            continue;
+        }
+        switch(currentLexem -> getLexType()) {
 
-    for (int i = 0, size = infix.size(); i < size; i++) {
-        LEXTYPE lextype = infix[i]->getLexType();
-        switch(lextype) {
             case NUMBER: {
-                poliz.push_back(infix[i]);
+                poliz.push_back(currentLexem);
                 break;
             }
             case VARIABLE: {
-                Variable *lexemvar = (Variable*)(infix[i]);
-                if (lexemvar->inLabelsMap()){
-                        //std::cout << "yes" << std::endl;
-                    joinGotoAndLabel(lexemvar, opstack);
-                } else {
-                    poliz.push_back(infix[i]);
+                Variable *lexemvar = (Variable*)currentLexem;
+                if(((Variable*)currentLexem) -> inLabelsMap()) {
+                    joinGotoAndLabel(lexemvar, poliz);
+                    break;
                 }
+                poliz.push_back(currentLexem);
                 break;
             }
             case OPER: {
-                switch(infix[i]->getType()) {
+                int oper = currentLexem -> getType();
+                switch(oper) {
                     case GOTO: {
-                        while (!opstack.empty()) {
-                            poliz.push_back(opstack.top());
-                            opstack.pop();
+                        while (!operStack.empty()) {
+                            poliz.push_back(operStack.top());
+                            operStack.pop();
                         }
+                        poliz.push_back(currentLexem);
+                        break;
+                    }
+                    case ENDIF: {
+                        continue;
                     }
                     case LBRACKET: {
-                        opstack.push(infix[i]);
+                        operStack.push(currentLexem);
                         break;
                     }
                     case RBRACKET: {
-                        delete infix[i];
-                        while ((opstack.top())->getType() != LBRACKET) {
-                            poliz.push_back(opstack.top());
-                            opstack.pop();
+                        while (operStack.top() -> getType() != LBRACKET) {
+                            poliz.push_back(operStack.top());
+                            operStack.pop();
                         }
-                        delete opstack.top();
-                        opstack.pop();
+                        operStack.pop();
                         break;
                     }
                     default: {}
-                    while ((opstack.size() > 0) && ((opstack.top())->getPriority() >= infix[i]->getPriority())){
-                            poliz.push_back(opstack.top());
-                            opstack.pop();
-                        }
-                        opstack.push(infix[i]);
+                }
+                if (!operStack.empty()){
+                    while(!operStack.empty() && (operStack.top() -> getPriority() >= currentLexem -> getPriority())) {
+                        poliz.push_back(operStack.top());
+                        operStack.pop();
                     }
                 }
-            default: {}
+                operStack.push(currentLexem);
             }
+            default: {}
+        }
     }
-    while(!opstack.empty()) {
-        poliz.push_back(opstack.top());
-        opstack.pop();
+    while(!operStack.empty()) {
+        poliz.push_back(operStack.top());
+        operStack.pop();
     }
     return poliz;
 }
 
-void joinGotoAndLabel(Variable *lexemvar, std::stack<Lexem *> &stack) {
-    if (stack.top()->getType() == GOTO) {
-        Goto *lexemgoto = (Goto*)stack.top();
-        lexemgoto->setRow(labelsMap[lexemvar->getName()]);
+void joinGotoAndLabel(Variable *lexemvar, std::vector<Lexem *> &vec) {
+    std::cout << "before join" << std::endl;
+    if (vec.back()->getType() == GOTO) {
+        Goto *lexemgoto = (Goto*)(vec.back());
+        lexemgoto->setRow(lexemvar->getName());
+        std::cout << "join" << std::endl;
     }
+
 }
