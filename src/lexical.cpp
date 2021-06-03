@@ -22,6 +22,16 @@ Lexem *getOper(std::string codeline, int & pos) {
             if ( i == GOTO || i == IF ||i == ELSE ||
                    i == WHILE || i == ENDWHILE )
                     return new Goto(static_cast<OPERATOR>(i));
+            else if (j == LSQUBR) {
+                if (!Lbr) {
+					Lbr = 1;
+					ptr = new Oper(OPERTEXT[LVALUE]);
+				} else {
+					ptr = new Oper(OPERTEXT[RVALUE]);
+				}
+			} else {
+				ptr = new Oper(OPERTEXT[j]);
+			}
             return new Oper(subcodeline);
         }
     }
@@ -93,4 +103,52 @@ void initLabels(std::vector <Lexem*> &infix, int row) {
             }
         }
     }
+}
+
+void initJumps(std::vector< std::vector<Lexem *>> infix) {
+	std::stack<Goto *> stackIfElse, stackWhile;
+	for (int row = 0; row < infix.size(); row++) {
+		for (int i = 0; i < infix[row].size(); i++) {
+			if (infix[row][i] == nullptr) {
+				continue;
+			}
+			if (infix[row][i] -> getLexType() == OPER) {
+				switch (infix[row][i] -> getType()) {
+					case IF:
+						stackIfElse.push((Goto *)infix[row][i]);
+						break;
+					case ELSE:
+						if (stackIfElse.empty()) {
+							perror("empty stackIfelse wrong syntax: else");
+							exit(1);
+						}
+						stackIfElse.top() -> setRow(row + 1);
+						stackIfElse.pop();
+						stackIfElse.push((Goto *)infix[row][i]);
+						break;
+					case ENDIF:
+						if (stackIfElse.empty()) {
+							perror("empty stackIfelse wrong syntax: endif");
+							exit(1);
+						}
+						stackIfElse.top() -> setRow(row + 1);
+						stackIfElse.pop();
+						break;
+					case WHILE:
+						((Goto *)infix[row][i]) -> setRow(row);
+						stackWhile.push((Goto *)infix[row][i]);
+						break;
+					case ENDWHILE:
+						if (stackWhile.empty()) {
+							perror("empty stackwhile wrong syntax: endwhile");
+							exit(1);
+						}
+						((Goto *)infix[row][i]) -> setRow(stackWhile.top() -> getRow());
+						stackWhile.top() -> setRow(row + 1);
+						stackWhile.pop();
+						break;
+				}
+			}
+		}
+	}
 }

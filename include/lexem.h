@@ -1,9 +1,12 @@
 #ifndef LEXEM
 #define LEXEM
 #include <const.h>
-#include <bits/stdc++.h>
+
 extern std::map<std::string, int> varTable;
 extern std::map<std::string, int> labelsMap;
+extern std::map<std::string, int *> arrayTable;
+extern std::map<std::string, int> arraySizeTable;
+
 class Lexem {
     LEXTYPE lxtp;
 public:
@@ -73,6 +76,23 @@ public:
     void print();
 };
 
+class Array : public Lexem {
+	std::string arrayName;
+	int index;
+	std::vector<int>data;
+public:
+	Array();
+	Array(std::string);
+	void setSize(int);
+	std::string getName();
+	void setIndex(int);
+	int getValue() const;
+	void setValue(int);
+	void print();
+};
+
+extern std::vector<Lexem *> recycle;
+extern Lexem *ptr;
 void printVar();
 void printLabel();
 void printVector(std::vector<Lexem *> infix);

@@ -1,0 +1,7 @@
+a[b[5]] = c[d[5]]
+
+infix
+a lvalue b rvalue 5 = c rvalue d rvalue 5
+
+postfix
+a b 5 rvalue c d 5 rvalue rvalue lvalue = 

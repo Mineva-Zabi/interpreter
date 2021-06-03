@@ -8,9 +8,12 @@
 
 enum LEXTYPE {
     NUMBER, OPER,
-    VARIABLE
+    VARIABLE, ARRAY
 };
 enum OPERATOR {
+    LSQUBR, RSQUBR,
+	SIZE,
+    PRINT,
     IF, ELSE,
     ENDIF, WHILE,
     ENDWHILE,
@@ -27,7 +30,8 @@ enum OPERATOR {
     LEQ, LT,
     GEQ, GT,
     PLUS, MINUS,
-    MULTIPLY, DIV, MOD
+    MULTIPLY, DIV, MOD,
+    LVALUE, RVALUE
 };
 extern int PRIORITY[];
 extern std::string OPERTEXT[];

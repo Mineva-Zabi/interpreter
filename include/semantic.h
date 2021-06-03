@@ -2,6 +2,6 @@
 #define SEMANTIC
 #include <lexem.h>
 
-int evaluatePoliz(std::vector<Lexem *> poliz, int row);
+int evaluatePoliz(const std::vector<Lexem *> &poliz, int row);
 
 #endif

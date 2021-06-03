@@ -1,6 +1,9 @@
 #include <const.h>
 
 int PRIORITY [] = {
+    -2, -1,
+    -1,
+    -1,
     -1, -1,
     -1, -1,
     -1,
@@ -16,9 +19,13 @@ int PRIORITY [] = {
     7, 7,
     9, 9,
     10, 10, 10
+    -2, -1
 };
 
 std::string OPERTEXT[] = {
+    "[", "]",
+    "size",
+    "print",
     "if", "else",
     "endif", "while",
     "endwhile",
@@ -36,5 +43,6 @@ std::string OPERTEXT[] = {
     ">=", ">",
     "+", "-",
     "*", "/", "%"
+    "LVALUE", "RVALUE"
 };
 int OP_NUM = sizeof(PRIORITY) / sizeof(int);

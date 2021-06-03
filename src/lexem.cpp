@@ -2,7 +2,11 @@
 
 std::map<std::string, int> varTable;
 std::map<std::string, int> labelsMap;
+std::map<std::string, int *> arrayTable;
+std::map<std::string, int> arraySizeTable;
+
 Lexem::Lexem(){}
+
 LEXTYPE Lexem::getLexType(){
     return lxtp;
 }
@@ -217,3 +221,57 @@ bool Variable::inLabelsMap() {
     }
 return false;
 }
+
+Array::Array() {}
+
+Array::Array(std::string str) : Lexem(ARRTYPE) {
+	arrayName = str;
+}
+void Array::setSize(int size_) {
+	if (size_ < 0) {
+		perror("Error: array");
+	}
+	if (!arraySizeTable.count(arrayName)) {
+		arraySizeTable[arrayName] = size_;
+		int *ptr = new int[size_];
+		for (int i = 0; i < size_; i++) {
+			ptr[i] = 0;
+		}
+		arrayTable[arrayName] = ptr;
+	} else {
+		perror("Couldn't allocate");
+	}
+}
+
+void Array::setIndex(int index_) {
+	if (index_ < 0 || (arraySizeTable.count(arrayName) && index_ > arraySizeTable[arrayName])) {
+		perror("Invalid index");
+	}
+	if (!arrayTable.count(arrayName)) {
+		int size = arraySizeTable[arrayName];
+		int *ptr = new int[size];
+		for (int i = 0; i < size; i++) {
+			ptr[i] = 0;
+		}
+		arrayTable[arrayName] = ptr;
+	}
+	index = index_;
+}
+
+int Array::getValue() const{
+	return (arrayTable[arrayName])[index];
+}
+
+void Array::setValue(int value) {
+	(arrayTable[arrayName])[index] = value;
+}
+
+void Array::print() {
+	std::cout << arrayName << ": ";
+	for (int i = 0; i < arraySizeTable[arrayName]; i++) {
+		std::cout << (arrayTable[arrayName])[i] << ' ';
+	}
+}
+
+std::vector<Lexem *> recycle;
+Lexem *ptr = nullptr; 

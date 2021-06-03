@@ -4,6 +4,7 @@
 std::vector<Lexem*> buildPoliz(std::vector<Lexem*> infix) {
     std::vector<Lexem *> poliz;
     std::stack<Lexem *> operStack;
+    int LvalueFlag = 0;
     for(auto currentLexem: infix) {
         if(currentLexem == nullptr) {
             continue;
@@ -17,7 +18,6 @@ std::vector<Lexem*> buildPoliz(std::vector<Lexem*> infix) {
             case VARIABLE: {
                 Variable *lexemvar = (Variable*)currentLexem;
                 if(((Variable*)currentLexem) -> inLabelsMap()) {
-
                     joinGotoAndLabel(lexemvar, poliz);
                     break;
                 }
@@ -36,20 +36,31 @@ std::vector<Lexem*> buildPoliz(std::vector<Lexem*> infix) {
                         break;
                     }
                     case ENDIF: {
-                        continue;
+                        break;
                     }
                     case LBRACKET: {
                         operStack.push(currentLexem);
                         break;
                     }
-                    case RBRACKET: {
-                        while (operStack.top() -> getType() != LBRACKET) {
-                            poliz.push_back(operStack.top());
-                            operStack.pop();
-                        }
-                        operStack.pop();
-                        break;
-                    }
+                    case LVALUE:
+				        LvalueFlag = 1;
+        				tmp = (Oper *)infix[i];
+        			case RVALUE:
+        				opstack.push((Oper *)infix[i]);
+                    case LBRACKET:
+    				    opstack.push((Oper *)infix[i]);
+    				    break;
+    			    case RSQUBR:
+                    case RBRACKET:
+        				while (opstack.top()->getType() != LBRACKET and opstack.top()->getType() != LVALUE and
+                				opstack.top()->getType() != RVALUE) {
+        					postfix.push_back(opstack.top());
+        					opstack.pop();
+    				    }
+				if(opstack.top()->getType() == RVALUE) {
+					postfix.push_back(opstack.top());
+				}
+				opstack.pop();
                     default: {}
                 }
                 if (!operStack.empty()){

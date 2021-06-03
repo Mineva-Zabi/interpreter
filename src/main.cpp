@@ -18,6 +18,9 @@ int main() {
         initLabels(infixLines[row], row);
     std::cout << "PARSELEXEM + INITLABELS" << std::endl;
     printVecVec(infixLines);
+    initJumps(infixLines);
+	std::cout << "initJumps" << std::endl;
+	printVecVec(infixLines);
     std::cout << std::endl;
     for (const auto &infix: infixLines)
         postfixLines.push_back(buildPoliz(infix));
@@ -26,12 +29,13 @@ int main() {
     std::cout << std::endl;
     int row = 0;
     while (row >= 0 && row < (int)postfixLines.size())
-        row = evaluatePoliz(postfixLines[row], row);
+        row = evaluatePoliz(postfixLines);
         /*std::cout << "EVAL POLIZ" << std::endl;
         printVecVec(postfixLines);
     */std::cout << std::endl;
     printVar();
     std::cout << std::endl;
     printLabel();
+    clear_vector(recycle);
     return 0;
 }
